@@ -4,7 +4,7 @@ set -e
 
 SCRIPTDIR=$(pwd)
 
-if [[ -z "CATEGORIES" ]]; then
+if [[ -z "$CATEGORIES" ]]; then
     CATEGORIES="person bicycle car motorcycle airplane bus train truck boat"
 fi
 echo "Categories: $CATEGORIES"
@@ -52,7 +52,7 @@ python filter-coco.py \
     --output_json "$TESTDEV_ANNOTATIONS_FILE" \
     --categories $CATEGORIES
 
-source untitled/util.sh
+source util.sh
 cd $(which_object_detection)
 
 python object_detection/dataset_tools/create_coco_tf_record.py \
