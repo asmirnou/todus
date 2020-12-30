@@ -1,3 +1,5 @@
 requests
 tensorflow < 2.0
 object-detection
+graphsurgeon
+uff

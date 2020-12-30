@@ -61,9 +61,12 @@ def prepare_model(model_name, dataset_type, quantization=False):
     config_path = os.path.join(a_model_path, 'pipeline.config')
     dataset_path = os.path.join(where_is_dataset(), dataset_type)
 
+    label_map_file = os.path.join(dataset_path, 'mscoco_label_map.pbtxt')
+    if not os.path.isfile(label_map_file):
+        print("Dataset {} is not ready, prepare dataset at first".format(dataset_type))
+        return
     print("Modifying pipeline config {}".format(config_path))
-
-    label_map = load_labelmap(os.path.join(dataset_path, 'mscoco_label_map.pbtxt'))
+    label_map = load_labelmap(label_map_file)
 
     pipeline = pipeline_pb2.TrainEvalPipelineConfig()
     with tf.io.gfile.GFile(config_path, "r") as f:
