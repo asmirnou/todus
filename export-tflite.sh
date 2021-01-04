@@ -7,6 +7,8 @@ select_model
 select_trained_checkpoint
 cd $(which_object_detection)
 
+export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+
 python object_detection/export_tflite_ssd_graph.py \
     --input_type="image_tensor" \
     --add_postprocessing_op=true \

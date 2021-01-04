@@ -6,7 +6,7 @@ import argparse
 import tensorflow as tf
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
-from object_detection.utils.label_map_util import load_labelmap, get_max_label_map_index
+from object_detection.utils.label_map_util import load_labelmap
 
 
 def where_is_model():
@@ -17,8 +17,8 @@ def where_is_dataset():
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), 'dataset', 'mscoco')
 
 
-def model_path(model_name, model_dir=where_is_model()):
-    return os.path.join(model_dir, model_name, "pretrained")
+def model_path(model_name, model_dir=where_is_model(), pretrained=True):
+    return os.path.join(model_dir, model_name, "pretrained" if pretrained else "inference-graph")
 
 
 def download_model(model_name,
@@ -84,7 +84,7 @@ def prepare_model(model_name, dataset_type, quantization=False):
         os.path.join(dataset_path, 'coco_val.record-?????-of-00050')]
     pipeline.eval_input_reader[0].label_map_path = \
         os.path.join(dataset_path, 'mscoco_label_map.pbtxt')
-    pipeline.model.ssd.num_classes = get_max_label_map_index(label_map)
+    pipeline.model.ssd.num_classes = max(label_map.item, key=lambda item: item.id).id
     if quantization:  # Quantization Aware Training
         pipeline.graph_rewriter.quantization.delay = 48000
         pipeline.graph_rewriter.quantization.weight_bits = 8

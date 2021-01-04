@@ -6,7 +6,7 @@ class Model(object):
     OUTPUT_NODES = ["NMS"]
 
     @staticmethod
-    def unsupported_nodes_to_plugin_nodes(graph):
+    def unsupported_nodes_to_plugin_nodes(graph, numClasses):
         Input = gs.create_plugin_node(
             name="Input",
             op="Placeholder",
@@ -35,7 +35,7 @@ class Model(object):
             nmsThreshold=0.6,
             topK=100,
             keepTopK=100,
-            numClasses=91,
+            numClasses=numClasses,
             inputOrder=[1, 0, 2],
             confSigmoid=1,
             isNormalized=1
@@ -78,6 +78,15 @@ class Model(object):
 
         graph.collapse_namespaces(namespace_plugin_map)
         graph.remove(graph.graph_outputs, remove_exclusive_dependencies=False)
-        graph.find_nodes_by_op("NMS_TRT")[0].input.remove("Input")
+
+        try:
+            graph.find_nodes_by_op("NMS_TRT")[0].input.remove("Input")
+        except ValueError:
+            print("WARNING: Input not found in NMS_TRT operation")
+
+        try:
+            graph.find_nodes_by_name("Input")[0].input.remove("image_tensor:0")
+        except ValueError:
+            print("WARNING: image_tensor:0 not found in Input node")
 
         return graph
