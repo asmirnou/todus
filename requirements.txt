@@ -1,5 +1,7 @@
 requests
+Pillow
 tensorflow < 2.0
 object-detection
+pycocotools
 graphsurgeon
 uff
